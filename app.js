@@ -22,5 +22,5 @@ app.ws('/', function (ws, req) {
 })
 
 app.listen(8080, function listening() {
-  console.log('Listening to %d', server.address().port)
+  console.log('Server listening on port 8080')
 })
