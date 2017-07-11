@@ -17,6 +17,7 @@ app.get('/', (req, res, next) => {
 })
 
 app.ws('/', (ws, req) => {
+  console.log('WebSocket was opened')
   ws.on('connection', () => {
     console.log('WebSocket was opened')
   })
