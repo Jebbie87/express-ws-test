@@ -57,11 +57,24 @@ wss.on('connection', function connection(ws, req) {
   // You might use location.query.access_token to authenticate or share sessions
   // or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
 
+  wss.broadcast = data => {
+    console.log('broadcasting')
+    wss.clients.forEach(client => {
+      client.send(JSON.stringify(data))
+    })
+  }
+
   ws.on('message', function incoming(message) {
     console.log('received: %s', message);
+    wss.broadcast({msg: 'testing broadcasting message'})
   });
 
-  ws.send('something');
+  // ws.send('something');
+
+  ws.on('close', () => {
+    wss.broadcast({msg: 'testing broadcasting close'})
+    console.log('client disconnect')
+  })
 });
 
 server.listen(process.env.PORT || 8080, function listening() {
