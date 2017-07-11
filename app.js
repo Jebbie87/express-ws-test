@@ -1,29 +1,26 @@
 const express = require('express')
-const http = require('http')
-const url = require('url')
-const WebSocket = require('ws')
+const app = express()
+const expressWs = require('express-ws')(app)
 
-const app = express().createServer()
 
-app.use(function (req, res) {
-  res.send({ msg: 'hello' })
+app.use(function (req, res, next) {
+  console.log('middleware')
+  req.testing = 'testing'
+  return next()
 })
 
-const server = http.createServer(app)
-const wss = new WebSocket.Server({ server })
+app.get('/', function (req, res, next) {
+  console.log('get route', req.testing)
+  res.end()
+})
 
-wss.on('connection', function connection(ws, req) {
-  const location = url.parse(req.url, true)
-
-  console.log('location', location)
-
-  ws.on('message', function incoming(message) {
-    console.log('received %s', message)
+app.ws('/', function (ws, req) {
+  ws.on('message', function(msg) {
+    console.log('msg', msg)
   })
-
-  ws.send('something')
+  console.log('socket', req.testing)
 })
 
-server.listen(8080, function listening() {
+app.listen(8080, function listening() {
   console.log('Listening to %d', server.address().port)
 })
