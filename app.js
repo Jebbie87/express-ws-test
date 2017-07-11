@@ -23,6 +23,7 @@ app.ws('/', (ws, req) => {
   })
 
   ws.on('message', (msg) => {
+    ws.send(msg)
     console.log('msg', msg)
 
   })
