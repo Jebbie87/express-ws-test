@@ -32,7 +32,7 @@ app.ws('/', (ws, req) => {
   })
 })
 
-consolewsInstance.getWss().clients
+console.log(wsInstance.getWss().clients)
 
 app.listen(process.env.PORT || 8080, () => {
   console.log('Server listening on port 5000')
