@@ -46,6 +46,7 @@ const WebSocket = require('ws');
 const app = express();
 
 app.use(function (req, res) {
+  req.send({ msg: 'test' })
   res.send({ msg: "hello" });
 });
 
