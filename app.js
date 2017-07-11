@@ -39,21 +39,20 @@
 // })
 
 const express = require('express');
-const http = require('http');
-const url = require('url');
-const WebSocket = require('ws');
+const WebSocket = require('ws').Server;
 
-const app = express();
+const server = express()
+  .listen(process.env.PORT || 8080, () => console.log('Listening on %d', server.address().port));
 
-app.use(function (req, res) {
-  req.send({ msg: 'test' })
-  res.send({ msg: "hello" });
-});
+// app.use(function (req, res) {
+//   res.send({ msg: "hello" });
+// });
 
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+// const server = http.createServer(app);
+const wss = new WebSocket({ server });
 
 wss.on('connection', function connection(ws, req) {
+  console.log('connected')
   const location = url.parse(req.url, true);
   // You might use location.query.access_token to authenticate or share sessions
   // or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
