@@ -13,6 +13,7 @@ const INDEX = path.join(__dirname, 'index.html');
 
 const server = express()
   .use(bodyParser.urlencoded({extended: false}))
+  .use(router)
   .use((req, res) => res.sendFile(INDEX) )
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
