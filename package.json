@@ -1,6 +1,9 @@
 {
   "name": "volto-backend",
   "version": "1.0.0",
+  "engines": {
+    "node": "8.1.x"
+  },
   "description": "",
   "main": "app.js",
   "scripts": {
