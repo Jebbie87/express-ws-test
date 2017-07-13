@@ -82,19 +82,40 @@
 //   console.log('Listening on %d', server.address().port);
 // });
 
-var app = require('express')();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+// var app = require('express')();
+// var server = require('http').Server(app);
+// var io = require('socket.io')(server);
 
-server.listen(process.env.PORT || 80);
+// server.listen(process.env.PORT || 80);
 
-app.get('/', function (req, res) {
-  res.sendfile(__dirname + '/index.html');
+// app.get('/', function (req, res) {
+//   res.sendfile(__dirname + '/index.html');
+// });
+
+// io.on('connection', function (socket) {
+//   socket.emit('news', { hello: 'world' });
+//   socket.on('my other event', function (data) {
+//     console.log(data);
+//   });
+// });
+
+
+const express = require('express');
+const socketIO = require('socket.io');
+const path = require('path');
+
+const PORT = process.env.PORT || 3000;
+const INDEX = path.join(__dirname, 'index.html');
+
+const server = express()
+  .use((req, res) => res.sendFile(INDEX) )
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
+const io = socketIO(server);
+
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
-io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
-});
+setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
