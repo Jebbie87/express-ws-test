@@ -8,17 +8,21 @@ console.log('config')
 
 exports.tokenGenerator = function tokenGenerator() {
   const identity = nameGenerator();
+  console.log('trigger')
   const capability = new ClientCapability({
     accountSid: config.accountSid,
     authToken: config.authToken,
   });
+  console.log('trigger1')
 
   capability.addScope(new ClientCapability.IncomingClientScope(identity));
+  console.log('trigger2')
   capability.addScope(new ClientCapability.OutgoingClientScope({
     accountSid: config.accountSid,
     applicationSid: config.twimlAppSid,
     clientName: identity,
   }));
+  console.log('trigger3')
 
   // Include identity and token in a JSON response
   return {
