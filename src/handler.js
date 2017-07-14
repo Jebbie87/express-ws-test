@@ -4,6 +4,8 @@ const VoiceResponse = require('twilio').twiml.VoiceResponse;
 const nameGenerator = require('../name_generator');
 const config = require('../config');
 
+console.log('config')
+
 exports.tokenGenerator = function tokenGenerator() {
   const identity = nameGenerator();
   const capability = new ClientCapability({
