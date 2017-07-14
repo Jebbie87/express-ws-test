@@ -8,20 +8,16 @@ console.log('config', config)
 
 exports.tokenGenerator = function tokenGenerator() {
   const identity = nameGenerator();
-  console.log('trigger')
   const capability = new ClientCapability({
     accountSid: config.accountSid,
     authToken: config.authToken,
   });
-  console.log('trigger1')
 
   capability.addScope(new ClientCapability.IncomingClientScope(identity));
-  console.log('trigger2')
   capability.addScope(new ClientCapability.OutgoingClientScope({
     applicationSid: config.twimlAppSid,
     clientName: identity,
   }));
-  console.log('trigger3')
 
   // Include identity and token in a JSON response
   return {
@@ -37,6 +33,7 @@ exports.voiceResponse = function voiceResponse(toNumber) {
   if(toNumber) {
     // Wrap the phone number or client name in the appropriate TwiML verb
     // if is a valid phone number
+    console.log('toNumber', toNumber)
     const attr = isAValidPhoneNumber(toNumber) ? 'number' : 'client';
 
     const dial = twiml.dial({
