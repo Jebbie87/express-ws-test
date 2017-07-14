@@ -15,6 +15,7 @@ exports.tokenGenerator = function tokenGenerator() {
 
   capability.addScope(new ClientCapability.IncomingClientScope(identity));
   capability.addScope(new ClientCapability.OutgoingClientScope({
+    accountSid: config.accountSid,
     applicationSid: config.twimlAppSid,
     clientName: identity,
   }));
