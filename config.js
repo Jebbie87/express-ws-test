@@ -1,4 +1,4 @@
-const dotenv = require('dotenv')
+const dotenv = require('dotenv').config()
 const cfg = {}
 
 cfg.port = process.env.PORT || 3000

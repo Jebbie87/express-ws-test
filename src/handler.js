@@ -33,9 +33,8 @@ exports.voiceResponse = function voiceResponse(toNumber) {
   if(toNumber) {
     // Wrap the phone number or client name in the appropriate TwiML verb
     // if is a valid phone number
-    console.log('toNumber', toNumber)
     const attr = isAValidPhoneNumber(toNumber) ? 'number' : 'client';
-
+    console.log('attr', attr)
     const dial = twiml.dial({
       callerId: config.callerId,
     });
