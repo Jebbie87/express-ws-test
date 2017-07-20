@@ -15,5 +15,8 @@ cfg.authToken = process.env.TWILIO_AUTH_TOKEN;
 cfg.twimlAppSid = process.env.TWILIO_TWIML_APP_SID;
 cfg.callerId = process.env.TWILIO_CALLER_ID;
 
+cfg.apiKey = process.env.TWILIO_API_KEY
+cfg.apiKeySecret = process.env.TWILIO_API_KEY_SECRET
+
 // Export configuration object
 module.exports = cfg;
