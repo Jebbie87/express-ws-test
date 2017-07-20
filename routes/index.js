@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../db.js');
-const middleware = require('../middleware.js')(models);
+// const middleware = require('../middleware.js')(models);
 
 // Route Files
 const user = require('./user');
 const language = require('./language');
 const status = require('./status');
-const topic =  require('./topic');
+const topic = require('./topic');
 
 
 router.use((req, res, next) => {
@@ -25,101 +25,11 @@ router.get('/', (req, res, next) => {
 });
 
 // Users
-router.get('/api/v1/users', middleware.requireAuthentication, user.list);
-router.get('/api/v1/users/:id', middleware.requireAuthentication, user.view);
+// router.get('/api/v1/users', user.list);
+router.get('/api/v1/users/:id', user.view);
 router.post('/api/v1/user', user.create);
 router.post('/api/v1/users/login', user.login);
-router.put('/api/v1/user/:id', middleware.requireAuthentication, user.update);
-//router.delete('/api/v1/user/:id', middleware.requireAuthentication, user.delete);
-router.delete('/api/v1/users/login', middleware.requireAuthentication, user.logout);
-router.post('/api/v1/user/authenticate', middleware.requireAuthentication, user.authenticate)
-router.post('/api/v1/user/forgotPassword', user.forgotPassword)
-
-
-// Owners
-router.get('/api/v1/owners', middleware.requireAuthentication, owner.list);
-router.get('/api/v1/owners/:id', middleware.requireAuthentication, owner.view);
-router.post('/api/v1/owner', owner.create);
-router.put('/api/v1/owner/:id', middleware.requireAuthentication, owner.update);
-router.delete('/api/v1/owner/:id', middleware.requireAuthentication, owner.delete);
-
-// Customers
-router.get('/api/v1/customers', middleware.requireAuthentication, customer.list);
-router.get('/api/v1/customers/:id', middleware.requireAuthentication, customer.view);
-router.put('/api/v1/customer/:id', middleware.requireAuthentication, customer.update);
-router.post('/api/v1/customer', middleware.requireAuthentication, customer.create);
-// router.delete('/api/v1/customer/:id', middleware.requireAuthentication, customer.delete);
-
-// Restaurants
-router.get('/api/v1/restaurants', middleware.requireAuthentication, restaurant.list);
-router.get('/api/v1/restaurants/:id', middleware.requireAuthentication, restaurant.view);
-router.post('/api/v1/restaurant', middleware.requireAuthentication, restaurant.create);
-router.put('/api/v1/restaurant/:id', middleware.requireAuthentication, restaurant.update);
-router.delete('/api/v1/restaurant/:id', middleware.requireAuthentication, restaurant.delete);
-
-// Meals
-router.get('/api/v1/meals', middleware.requireAuthentication, meal.list);
-router.get('/api/v1/meals/:id', middleware.requireAuthentication, meal.view);
-router.post('/api/v1/meal', middleware.requireAuthentication, meal.create);
-router.put('/api/v1/meal/:id', middleware.requireAuthentication, meal.update);
-router.delete('/api/v1/meal/:id', middleware.requireAuthentication, meal.delete);
-
-// Meal Offers
-router.get('/api/v1/offers', middleware.requireAuthentication, offer.list);
-router.get('/api/v1/offers/:id', middleware.requireAuthentication, offer.view);
-router.get('/api/v1/offers-report', middleware.requireAuthentication, offer.offers);
-router.post('/api/v1/offer', middleware.requireAuthentication, offer.create);
-router.delete('/api/v1/offer/:id', middleware.requireAuthentication, offer.delete);
-router.put('/api/v1/offer/:id', middleware.requireAuthentication, offer.update)
-
-// Orders
-router.get('/api/v1/orders', middleware.requireAuthentication, order.list);
-router.post('/api/v1/order', middleware.requireAuthentication, order.create);
-router.get('/api/v1/orders/:id', middleware.requireAuthentication, order.view);
-router.put('/api/v1/order/:id', middleware.requireAuthentication, order.update)
-//router.delete('/api/v1/order/:id', middleware.requireAuthentication, order.delete);
-
-// Payment Plans
-router.get('/api/v1/payment-plans', middleware.requireAuthentication, paymentPlan.list);
-router.get('/api/v1/payment-plans/:id', middleware.requireAuthentication, paymentPlan.view);
-router.post('/api/v1/payment-plan', middleware.requireAuthentication, paymentPlan.create);
-router.put('/api/v1/payment-plan/:id', middleware.requireAuthentication, paymentPlan.update);
-router.delete('/api/v1/payment-plan/:id', middleware.requireAuthentication, paymentPlan.delete);
-
-// Referral Codes
-router.get('/api/v1/referral-codes', middleware.requireAuthentication, referralCode.list);
-router.post('/api/v1/referral-code', middleware.requireAuthentication, referralCode.create);
-router.delete('/api/v1/referral-code/:id', middleware.requireAuthentication, referralCode.delete);
-
-// Feedbacks
-router.get('/api/v1/feedbacks', middleware.requireAuthentication, feedback.list);
-router.post('/api/v1/feedback', middleware.requireAuthentication, feedback.create);
-router.delete('/api/v1/feedback/:id', middleware.requireAuthentication, feedback.delete);
-
-// Invoices
-router.get('/api/v1/invoices', middleware.requireAuthentication, invoice.list);
-router.post('/api/v1/invoice', middleware.requireAuthentication, invoice.create);
-//router.delete('/api/v1/invoice/:id', middleware.requireAuthentication, invoice.delete);
-
-// Amazon
-router.post('/api/v1/signing', middleware.requireAuthentication, aws.signing);
-
-// Email
-router.post('/api/v1/sendEmail', middleware.requireAuthentication, email.sendEmail);
-router.post('/api/v1/sendROEmail', middleware.requireAuthentication, email.sendROEmail);
-
-// Payouts
-router.get('/api/v1/payouts', middleware.requireAuthentication, payout.list);
-router.post('/api/v1/payout', middleware.requireAuthentication, payout.create);
-
-// Weeks
-router.get('/api/v1/weeks', middleware.requireAuthentication, week.list);
-router.get('/api/v1/week/:id', middleware.requireAuthentication, week.view);
-
-// Pickup Times
-router.get('/api/v1/pickup-times', middleware.requireAuthentication, pickUpTime.list);
-
-// Payments
-router.post('/api/v1/create-subscription', payment.createSubscription);
+router.put('/api/v1/user/:id', user.update);
+//router.delete('/api/v1/user/:id', user.delete);
 
 module.exports = router;
