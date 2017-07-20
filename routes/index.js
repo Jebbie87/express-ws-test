@@ -17,13 +17,6 @@ router.use((req, res, next) => {
     next();
 });
 
-// Views
-router.get('/', (req, res, next) => {
-    res.render('index', {
-        title: 'Lunch Society'
-    });
-});
-
 // Users
 // router.get('/api/v1/users', user.list);
 router.get('/api/v1/users/:id', user.view);

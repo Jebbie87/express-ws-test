@@ -20,8 +20,7 @@ Use Cases:
 */
 
 module.exports = function(sequelize, DataTypes) {
-
-    const users = sequelize.define('users', {
+   return sequelize.define('users', {
         first_name: {
             type: DataTypes.STRING
         },
@@ -41,6 +40,4 @@ module.exports = function(sequelize, DataTypes) {
         underscored: true,
         timestamps: false
     });
-
-    return users;
 };

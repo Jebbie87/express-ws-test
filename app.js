@@ -10,14 +10,14 @@ const router = require('./src/router')
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 
-const server = express()
-server.use(bodyParser.urlencoded({extended: false}))
-server.use(router)
+const app = express()
 
-db.sequelize.sync().then(function () {
-  app.listen(PORT, function () {
-    console.log('Express Server Started on Port ' + PORT + '!');
-  });
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(router)
+
+app.use('/', routes)
+
+db.sequelize.sync().then(() => {
+  app.listen(PORT, () =>  console.log(`Listening on ${ PORT }`));
 });
-
-server.listen(PORT, () => console.log(`Listening on ${ PORT }`));

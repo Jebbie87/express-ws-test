@@ -14,8 +14,7 @@ Use Cases:
 */
 
 module.exports = function(sequelize, DataTypes) {
-
-    const statuses = sequelize.define('statuses', {
+    return sequelize.define('statuses', {
         status_type: {
             type: DataTypes.STRING
         }
@@ -23,6 +22,4 @@ module.exports = function(sequelize, DataTypes) {
         underscored: true,
         timestamps: false
     });
-
-    return statuses;
 };

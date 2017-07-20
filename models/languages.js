@@ -15,8 +15,7 @@ Use Cases:
 */
 
 module.exports = function(sequelize, DataTypes) {
-
-    const languages = sequelize.define('languages', {
+    return sequelize.define('languages', {
         topic_type: {
             type: DataTypes.STRING
         }
@@ -24,6 +23,4 @@ module.exports = function(sequelize, DataTypes) {
         underscored: true,
         timestamps: false
     });
-
-    return languages;
 };
