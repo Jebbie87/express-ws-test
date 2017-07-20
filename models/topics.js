@@ -14,12 +14,12 @@ Use Cases:
 */
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define('topics', {
-        topic_type: {
-            type: DataTypes.STRING
-        }
-    }, {
-        underscored: true,
-        timestamps: false
-    });
+  return sequelize.define('topics', {
+    topic_type: {
+      type: DataTypes.STRING
+    }
+  }, {
+    underscored: true,
+    timestamps: false
+  });
 };

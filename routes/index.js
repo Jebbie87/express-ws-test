@@ -9,12 +9,11 @@ const language = require('./language');
 const status = require('./status');
 const topic = require('./topic');
 
-
 router.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Auth");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    next();
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Auth");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  next();
 });
 
 // Users
