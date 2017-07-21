@@ -8,6 +8,9 @@ const user = require('./user');
 const language = require('./language');
 const status = require('./status');
 const topic = require('./topic');
+const token = require('./token')
+
+const baseURL = 'https://volto.herokuapp.com'
 
 router.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -23,5 +26,7 @@ router.post('/api/v1/user', user.create);
 router.post('/api/v1/users/login', user.login);
 router.put('/api/v1/user/:id', user.update);
 //router.delete('/api/v1/user/:id', user.delete);
+
+router.get('/token', )
 
 module.exports = router;
