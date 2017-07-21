@@ -46,7 +46,7 @@ db.topics.belongsTo(db.users);
 db.users.hasOne(db.topics);
 
 // Users & Languages
-db.Languages.belongsTo(db.users);
+db.languages.belongsTo(db.users);
 db.users.hasMany(db.users);
 
 module.exports = db;
