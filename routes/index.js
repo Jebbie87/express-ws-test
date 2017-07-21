@@ -21,10 +21,10 @@ router.use((req, res, next) => {
 
 // Users
 // router.get('/api/v1/users', user.list);
-router.get('/api/v1/users/:id', user.view);
-router.post('/api/v1/user', user.create);
-router.post('/api/v1/users/login', user.login);
-router.put('/api/v1/user/:id', user.update);
+// router.get('/api/v1/users/:id', user.view);
+// router.post('/api/v1/user', user.create);
+// router.post('/api/v1/users/login', user.login);
+// router.put('/api/v1/user/:id', user.update);
 //router.delete('/api/v1/user/:id', user.delete);
 
 router.get('/token', token.tokenGenerator)
