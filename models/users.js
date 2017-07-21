@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     last_name: {
       type: DataTypes.STRING
-    }
+    },
     phone_number: {
       type: DataTypes.BIGINT(10)
     },
