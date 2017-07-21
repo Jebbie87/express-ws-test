@@ -1,248 +1,244 @@
-var _ = require('underscore');
-var models = require('../db.js');
-var cryptojs = require('crypto-js');
-var email = require('./email');
-const moment = require('moment')
+const models = require('../db.js');
 
-// GET /api/v1/users
-exports.list = function(req, res) {
-    var query = req.query;
-    var where = {};
+// // GET /api/v1/users
+// exports.list = function(req, res) {
+//     var query = req.query;
+//     var where = {};
 
-    var include = [];
+//     var include = [];
 
-    // QUERY PARAMETERS
+//     // QUERY PARAMETERS
 
-    // email -> Email
-    if (query.hasOwnProperty('email') && query.email.length > 0) {
-        where.email = {
-            $like: '%' + query.email + '%'
-        };
-    }
+//     // email -> Email
+//     if (query.hasOwnProperty('email') && query.email.length > 0) {
+//         where.email = {
+//             $like: '%' + query.email + '%'
+//         };
+//     }
 
-    // type -> Type
-    if (query.hasOwnProperty('type') && query.type.length > 0) {
-        where.type = {
-            $like: '%' + query.type + '%'
-        };
-    }
+//     // type -> Type
+//     if (query.hasOwnProperty('type') && query.type.length > 0) {
+//         where.type = {
+//             $like: '%' + query.type + '%'
+//         };
+//     }
 
-    // confirmed_email -> Confirmed Email?
-    if (query.hasOwnProperty('confirmed_email') && query.confirmed_email.length > 0) {
-        where.confirmed_email = {
-            $like: '%' + query.confirmed_email + '%'
-        };
-    }
+//     // confirmed_email -> Confirmed Email?
+//     if (query.hasOwnProperty('confirmed_email') && query.confirmed_email.length > 0) {
+//         where.confirmed_email = {
+//             $like: '%' + query.confirmed_email + '%'
+//         };
+//     }
 
-    if (query.hasOwnProperty('waiting_list') && query.waiting_list.length > 0) {
-        where.type = {
-            $not: 'admin'
-        };
-        include = [{
-            attributes: ['id'],
-            model: models.owners
-        }, {
-            attributes: ['id'],
-            model: models.customers
-        }];
-    }
+//     if (query.hasOwnProperty('waiting_list') && query.waiting_list.length > 0) {
+//         where.type = {
+//             $not: 'admin'
+//         };
+//         include = [{
+//             attributes: ['id'],
+//             model: models.owners
+//         }, {
+//             attributes: ['id'],
+//             model: models.customers
+//         }];
+//     }
 
-    if (query.hasOwnProperty('owner_list') && query.owner_list.length > 0) {
-        include = [{
-            attributes: ['id'],
-            model: models.owners
-        }];
-    }
+//     if (query.hasOwnProperty('owner_list') && query.owner_list.length > 0) {
+//         include = [{
+//             attributes: ['id'],
+//             model: models.owners
+//         }];
+//     }
 
-    models.users.findAll({
-        attributes: ['id', 'email', 'confirmed_email', 'type'],
-        where: where,
-        include: include
-    }).then(function(users) {
-        if (query.hasOwnProperty('waiting_list') && query.waiting_list.length > 0) {
-            var filteredUsers = _.where(users, {owner: null, customer: null});
-            res.json(filteredUsers);
-        } else if (query.hasOwnProperty('owner_list') && query.owner_list.length > 0) {
-            var filteredOwners = _.where(users, {owner: null});
-            res.json(filteredOwners);
-        } else {
-            res.json(users);
-        }
-    }, function(e) {
-        res.status(500).send();
-    });
-};
+//     models.users.findAll({
+//         attributes: ['id', 'email', 'confirmed_email', 'type'],
+//         where: where,
+//         include: include
+//     }).then(function(users) {
+//         if (query.hasOwnProperty('waiting_list') && query.waiting_list.length > 0) {
+//             var filteredUsers = _.where(users, {owner: null, customer: null});
+//             res.json(filteredUsers);
+//         } else if (query.hasOwnProperty('owner_list') && query.owner_list.length > 0) {
+//             var filteredOwners = _.where(users, {owner: null});
+//             res.json(filteredOwners);
+//         } else {
+//             res.json(users);
+//         }
+//     }, function(e) {
+//         res.status(500).send();
+//     });
+// };
 
-// GET /api/v1/users/:id
-exports.view = function(req, res) {
-    var userID = parseInt(req.params.id, 10);
-    models.users.findById(userID).then(function(user) {
-        if (user === null) {
-            res.status(404);
-        } else {
-            res.json(user.toPublicJSON());
-        }
-    }, function(e) {
-        res.status(404).json(e);
-    });
-};
+// // GET /api/v1/users/:id
+// exports.view = function(req, res) {
+//     var userID = parseInt(req.params.id, 10);
+//     models.users.findById(userID).then(function(user) {
+//         if (user === null) {
+//             res.status(404);
+//         } else {
+//             res.json(user.toPublicJSON());
+//         }
+//     }, function(e) {
+//         res.status(404).json(e);
+//     });
+// };
 
-// POST /api/v1/user
-exports.create = function(req, res) {
-    var body = _.pick(req.body, 'email', 'password', 'type', 'id');
-    body.email = body.email.toLowerCase();
-    models.users.create(body).then(function(user) {
-        if (body.type === "customer") {
-            var data = {
-                name: 'Customer',
-                email: user.email,
-                password: body.password
-            }
-            res.json(user);
-            data.trial_start_date = moment().format('MMMM DD, YYYY')
-            data.trial_end_date = moment().add(30, 'd').format('MMMM DD, YYYY')
-            data.trial_length = 30
-            email.sendCustomerWelcomeEmail(data, res);
-        } else if (body.type === "owner") {
-            var data = {
-                name: 'Restaurant Owner',
-                email: user.email,
-                password: body.password
-            }
-            res.json(user);
-            email.sendOwnerWelcomeEmail(data, res);
-        } else {
-            res.json(user);
-        }
-    }, function(e) {
-        res.status(400).json(e);
-    });
-};
+// // POST /api/v1/user
+// exports.create = function(req, res) {
+//     var body = _.pick(req.body, 'email', 'password', 'type', 'id');
+//     body.email = body.email.toLowerCase();
+//     models.users.create(body).then(function(user) {
+//         if (body.type === "customer") {
+//             var data = {
+//                 name: 'Customer',
+//                 email: user.email,
+//                 password: body.password
+//             }
+//             res.json(user);
+//             data.trial_start_date = moment().format('MMMM DD, YYYY')
+//             data.trial_end_date = moment().add(30, 'd').format('MMMM DD, YYYY')
+//             data.trial_length = 30
+//             email.sendCustomerWelcomeEmail(data, res);
+//         } else if (body.type === "owner") {
+//             var data = {
+//                 name: 'Restaurant Owner',
+//                 email: user.email,
+//                 password: body.password
+//             }
+//             res.json(user);
+//             email.sendOwnerWelcomeEmail(data, res);
+//         } else {
+//             res.json(user);
+//         }
+//     }, function(e) {
+//         res.status(400).json(e);
+//     });
+// };
 
-// POST /api/v1/users/login
-exports.login = function(req, res) {
-    // need to send a 5 digit code for them to login everytime
-    var body = _.pick(req.body, 'email', 'password');
-    body.email = body.email.toLowerCase();
-    var userInstance;
-    models.users.authenticate(body).then(function(user) {
-        var token = user.generateToken('authentication');
-        userInstance = user;
-        return models.tokens.create({
-            token: token
-        });
-    }).then(function(tokenInstance) {
-        var token = tokenInstance.get('token');
-        models.users.findById(userInstance.id).then(function(user) {
-            var userDetails = _.pick(user.toPublicJSON(token), 'type', 'id');
-            var userSend = {};
-            userSend.token = token;
-            if (userDetails.type === 'customer') {
-                models.customers.findAll({
-                    where: {
-                        user_id: userDetails.id
-                    },
-                    attributes: ['payment_plan_id', 'id', 'user_id'],
-                }).then(function(customer) {
-                    models.orders.findOne({where: {
-                        status: 'active',
-                        customer_id: customer[0].id
-                    }})
-                    .then(order => {
-                        if (order) {
-                            const today = moment().format('YYYY-MM-DD')
-                            //moment rounds down when date has T00:00:00.000Z
-                            //e.g 2017-07-05T00:00:00.000Z with moment === 2017-07-04
-                            const tomorrowOrderDate = moment(order.order_date).add(2, 'd').format('YYYY-MM-DD')
-                            userSend.hasOrder = order.toJSON().id
-                            if (moment(today).isSame(tomorrowOrderDate)) {
-                                userSend.needOrderFeedback = order.toJSON().id
-                            }
-                        }
-                        userSend.user_id = customer[0].user_id;
-                        userSend.customer_id = customer[0].id;
-                        userSend.type = "customer";
-                        res.header('Auth', token).json(userSend);
-                    }, function(e) {
-                        res.status(500).send()
-                    })
-                });
-            } else if (userDetails.type === 'owner') {
-                models.owners.findOne({
-                    attributes: ['id', 'user_id', 'status'],
-                    where: {
-                        user_id: userDetails.id
-                    },
-                    include: [{
-                        attributes: ['id'],
-                        model: models.restaurants
-                    }]
-                }).then(function(owner) {
-                    userSend.type = "owner";
-                    userSend.user_id = owner.user_id;
-                    userSend.owner_id = owner.id;
-                    userSend.restaurant_id = owner.restaurant.id;
-                    userSend.status = owner.status
-                    res.header('Auth', token).json(userSend);
-                }, function(e) {
-                    res.status(500).send();
-                });
-            } else if (userDetails.type === 'admin') {
-                userSend.user_id = userInstance.id;
-                userSend.type = "admin";
+// // POST /api/v1/users/login
+// exports.login = function(req, res) {
+//     // need to send a 5 digit code for them to login everytime
+//     var body = _.pick(req.body, 'email', 'password');
+//     body.email = body.email.toLowerCase();
+//     var userInstance;
+//     models.users.authenticate(body).then(function(user) {
+//         var token = user.generateToken('authentication');
+//         userInstance = user;
+//         return models.tokens.create({
+//             token: token
+//         });
+//     }).then(function(tokenInstance) {
+//         var token = tokenInstance.get('token');
+//         models.users.findById(userInstance.id).then(function(user) {
+//             var userDetails = _.pick(user.toPublicJSON(token), 'type', 'id');
+//             var userSend = {};
+//             userSend.token = token;
+//             if (userDetails.type === 'customer') {
+//                 models.customers.findAll({
+//                     where: {
+//                         user_id: userDetails.id
+//                     },
+//                     attributes: ['payment_plan_id', 'id', 'user_id'],
+//                 }).then(function(customer) {
+//                     models.orders.findOne({where: {
+//                         status: 'active',
+//                         customer_id: customer[0].id
+//                     }})
+//                     .then(order => {
+//                         if (order) {
+//                             const today = moment().format('YYYY-MM-DD')
+//                             //moment rounds down when date has T00:00:00.000Z
+//                             //e.g 2017-07-05T00:00:00.000Z with moment === 2017-07-04
+//                             const tomorrowOrderDate = moment(order.order_date).add(2, 'd').format('YYYY-MM-DD')
+//                             userSend.hasOrder = order.toJSON().id
+//                             if (moment(today).isSame(tomorrowOrderDate)) {
+//                                 userSend.needOrderFeedback = order.toJSON().id
+//                             }
+//                         }
+//                         userSend.user_id = customer[0].user_id;
+//                         userSend.customer_id = customer[0].id;
+//                         userSend.type = "customer";
+//                         res.header('Auth', token).json(userSend);
+//                     }, function(e) {
+//                         res.status(500).send()
+//                     })
+//                 });
+//             } else if (userDetails.type === 'owner') {
+//                 models.owners.findOne({
+//                     attributes: ['id', 'user_id', 'status'],
+//                     where: {
+//                         user_id: userDetails.id
+//                     },
+//                     include: [{
+//                         attributes: ['id'],
+//                         model: models.restaurants
+//                     }]
+//                 }).then(function(owner) {
+//                     userSend.type = "owner";
+//                     userSend.user_id = owner.user_id;
+//                     userSend.owner_id = owner.id;
+//                     userSend.restaurant_id = owner.restaurant.id;
+//                     userSend.status = owner.status
+//                     res.header('Auth', token).json(userSend);
+//                 }, function(e) {
+//                     res.status(500).send();
+//                 });
+//             } else if (userDetails.type === 'admin') {
+//                 userSend.user_id = userInstance.id;
+//                 userSend.type = "admin";
 
-                res.header('Auth', token).json(userSend);
-            }
-        });
-    }).catch(function() {
-        res.status(401).send();
-    });
+//                 res.header('Auth', token).json(userSend);
+//             }
+//         });
+//     }).catch(function() {
+//         res.status(401).send();
+//     });
 
-};
+// };
 
-// PUT /api/v1/user/:id
-exports.update = function(req, res) {
-    var userID = parseInt(req.params.id, 10);
-    var body = _.pick(req.body, 'email', 'password', 'confirmed_email', 'type', 'user_reset');
-    var attributes = {};
+// // PUT /api/v1/user/:id
+// exports.update = function(req, res) {
+//     var userID = parseInt(req.params.id, 10);
+//     var body = _.pick(req.body, 'email', 'password', 'confirmed_email', 'type', 'user_reset');
+//     var attributes = {};
 
-    if (body.hasOwnProperty('email')) {
-        body.email = body.email.toLowerCase();
-        attributes.email = body.email;
-    }
+//     if (body.hasOwnProperty('email')) {
+//         body.email = body.email.toLowerCase();
+//         attributes.email = body.email;
+//     }
 
-    if (body.hasOwnProperty('password')) {
-        attributes.password = body.password;
-    }
+//     if (body.hasOwnProperty('password')) {
+//         attributes.password = body.password;
+//     }
 
-    if (body.hasOwnProperty('confirmed_email')) {
-        attributes.confirmed_email = body.confirmed_email;
-    }
+//     if (body.hasOwnProperty('confirmed_email')) {
+//         attributes.confirmed_email = body.confirmed_email;
+//     }
 
-    if (body.hasOwnProperty('type')) {
-        attributes.type = body.type
-    }
+//     if (body.hasOwnProperty('type')) {
+//         attributes.type = body.type
+//     }
 
-    models.users.findById(userID).then(function(user) {
-        if (user) {
-            user.update(attributes).then(function(user) {
-                res.json(user.toPublicJSON());
+//     models.users.findById(userID).then(function(user) {
+//         if (user) {
+//             user.update(attributes).then(function(user) {
+//                 res.json(user.toPublicJSON());
 
-                if (body.user_reset) {
-                    const emailData = {
-                        email: user.toJSON().email,
-                        password: body.password
-                    }
+//                 if (body.user_reset) {
+//                     const emailData = {
+//                         email: user.toJSON().email,
+//                         password: body.password
+//                     }
 
-                    email.sendPasswordResetEmail(emailData, res)
-                }
-            }, function(e) {
-                res.status(400).json(e);
-            });
-        } else {
-            res.status(404).send();
-        }
-    }, function() {
-        res.status(500).send();
-    });
-};
+//                     email.sendPasswordResetEmail(emailData, res)
+//                 }
+//             }, function(e) {
+//                 res.status(400).json(e);
+//             });
+//         } else {
+//             res.status(404).send();
+//         }
+//     }, function() {
+//         res.status(500).send();
+//     });
+// };
