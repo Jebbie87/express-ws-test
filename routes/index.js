@@ -27,6 +27,6 @@ router.post('/api/v1/users/login', user.login);
 router.put('/api/v1/user/:id', user.update);
 //router.delete('/api/v1/user/:id', user.delete);
 
-router.get('/token', )
+router.get('/token', token.tokenGenerator)
 
 module.exports = router;
