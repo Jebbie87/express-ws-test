@@ -9,6 +9,8 @@ const router = require('./src/router')
 
 const routes = require('./routes/index.js')
 
+const db = require('./db.js');
+
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 
